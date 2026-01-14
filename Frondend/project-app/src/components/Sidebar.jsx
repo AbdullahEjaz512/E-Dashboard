@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Users, ShoppingBag, Settings, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Users, ShoppingBag, Settings, LogOut, X, ClipboardList } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: BarChart3, label: 'Analytics', path: '/analytics' },
+    { icon: ClipboardList, label: 'Orders', path: '/orders' },
     { icon: Users, label: 'Customers', path: '/customers' },
     { icon: ShoppingBag, label: 'Products', path: '/products' },
     { icon: Settings, label: 'Settings', path: '/settings' },

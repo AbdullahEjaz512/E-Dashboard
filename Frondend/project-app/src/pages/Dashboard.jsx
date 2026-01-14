@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { TrendingUp, Users, ShoppingBag, CreditCard, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState('Last 7 Days');
 
   const [stats] = useState([
@@ -160,7 +163,7 @@ const Dashboard = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h3 className="text-lg font-bold text-gray-900">Recent Transactions</h3>
-          <button onClick={() => alert('Viewing all transactions...')} className="text-sm text-blue-600 font-medium hover:text-blue-700">View All</button>
+          <button onClick={() => navigate('/orders')} className="text-sm text-blue-600 font-medium hover:text-blue-700">View All</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
