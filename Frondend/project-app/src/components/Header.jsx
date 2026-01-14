@@ -1,12 +1,15 @@
 import React from 'react';
 import { Bell, Search, Menu } from 'lucide-react';
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
   return (
     <header className="h-16 bg-white border-b border-gray-200 shadow-sm z-10">
       <div className="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
+          <button 
+            onClick={onMenuClick}
+            className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+          >
             <Menu className="w-6 h-6" />
           </button>
           
