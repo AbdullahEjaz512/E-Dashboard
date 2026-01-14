@@ -60,7 +60,14 @@ const Sidebar = ({ isOpen, onClose }) => {
         </nav>
 
         <div className="p-4 border-t border-gray-200">
-          <button className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 w-full transition-colors">
+          <button 
+            onClick={() => {
+              if(confirm('Are you sure you want to sign out?')) {
+                alert('Signed out successfully');
+              }
+            }}
+            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 w-full transition-colors"
+          >
             <LogOut className="w-5 h-5" />
             Sign Out
           </button>

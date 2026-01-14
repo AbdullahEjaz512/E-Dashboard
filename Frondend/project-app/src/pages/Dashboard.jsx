@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { TrendingUp, Users, ShoppingBag, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Users, ShoppingBag, CreditCard, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
 
 const Dashboard = () => {
+  const [timeRange, setTimeRange] = useState('Last 7 Days');
+
   const [stats] = useState([
     { title: 'Total Revenue', value: '$45,231', change: '+20.1%', positive: true, icon: CreditCard },
     { title: 'Total Users', value: '2,345', change: '+12.5%', positive: true, icon: Users },
@@ -17,21 +19,33 @@ const Dashboard = () => {
     { id: '#ORD-005', customer: 'Robert Brown', product: 'Basic Plan', amount: '$49.00', status: 'Cancelled', date: 'Jan 13, 2024' },
   ]);
 
+  const handleDownloadReport = () => {
+    alert(`Downloading report for ${timeRange}... (Mock Action)`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
           <p className="text-sm text-gray-500 mt-1">Welcome back, Abdullah Ejaz! Here&apos;s what&apos;s happening today.</p>
         </div>
-        <div className="flex gap-3">
-          <select className="text-sm border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <div className="flex gap-3 w-full sm:w-auto">
+          <select 
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+            className="flex-1 sm:flex-none text-sm border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer"
+          >
             <option>Last 7 Days</option>
             <option>Last 30 Days</option>
             <option>This Year</option>
           </select>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={handleDownloadReport}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            <Download className="w-4 h-4" />
             Download Report
           </button>
         </div>
@@ -40,7 +54,7 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow cursor-default">
             <div className="flex justify-between items-start mb-4">
               <div className="p-2 bg-blue-50 rounded-lg">
                 <stat.icon className="w-6 h-6 text-blue-600" />
@@ -67,7 +81,7 @@ const Dashboard = () => {
                   className="absolute bottom-0 w-full bg-blue-500 rounded-t-sm group-hover:bg-blue-700 transition-all duration-300" 
                   style={{ height: `${height}%` }}
                 />
-                <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded pointer-events-none transition-opacity">
+                <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded pointer-events-none transition-opacity font-bold rounded-md bg-opacity-90">
                   ${height * 100}
                 </div>
               </div>
@@ -93,31 +107,31 @@ const Dashboard = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-6">Traffic Sources</h3>
           <div className="space-y-6">
-            <div>
+            <div className="group cursor-default">
               <div className="flex justify-between text-sm mb-2">
                 <span className="font-medium text-gray-700">Direct Traffic</span>
                 <span className="text-gray-900 font-bold">45%</span>
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '45%' }}></div>
+                <div className="bg-blue-600 h-2 rounded-full transition-all duration-1000 group-hover:w-[50%]" style={{ width: '45%' }}></div>
               </div>
             </div>
-            <div>
+            <div className="group cursor-default">
               <div className="flex justify-between text-sm mb-2">
                 <span className="font-medium text-gray-700">Detailed Referrals</span>
                 <span className="text-gray-900 font-bold">32%</span>
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2">
-                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '32%' }}></div>
+                <div className="bg-purple-600 h-2 rounded-full transition-all duration-1000 group-hover:w-[40%]" style={{ width: '32%' }}></div>
               </div>
             </div>
-            <div>
+            <div className="group cursor-default">
               <div className="flex justify-between text-sm mb-2">
                 <span className="font-medium text-gray-700">Social Media</span>
                 <span className="text-gray-900 font-bold">23%</span>
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '23%' }}></div>
+                <div className="bg-green-500 h-2 rounded-full transition-all duration-1000 group-hover:w-[30%]" style={{ width: '23%' }}></div>
               </div>
             </div>
           </div>
@@ -125,15 +139,15 @@ const Dashboard = () => {
           <div className="mt-8 pt-6 border-t border-gray-100">
             <h4 className="text-sm font-semibold text-gray-900 mb-3">Upcoming Tasks</h4>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
                 <div className="w-2 h-2 rounded-full bg-red-500"></div>
                 <span className="text-sm text-gray-600">Review weekly reports</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
                 <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
                 <span className="text-sm text-gray-600">Meeting with dev team</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
                 <span className="text-sm text-gray-600">Update product roadmap</span>
               </div>
@@ -146,7 +160,7 @@ const Dashboard = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h3 className="text-lg font-bold text-gray-900">Recent Transactions</h3>
-          <button className="text-sm text-blue-600 font-medium hover:text-blue-700">View All</button>
+          <button onClick={() => alert('Viewing all transactions...')} className="text-sm text-blue-600 font-medium hover:text-blue-700">View All</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -162,8 +176,8 @@ const Dashboard = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {recentOrders.map((order, index) => (
-                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{order.id}</td>
+                <tr key={index} className="hover:bg-gray-50/50 transition-colors cursor-pointer">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline">{order.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import { Mail, Phone, MoreHorizontal } from 'lucide-react';
+import { Mail, Phone, MoreHorizontal, UserPlus } from 'lucide-react';
 
 const Customers = () => {
   const customers = [
@@ -14,7 +14,11 @@ const Customers = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Customers</h2>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+        <button 
+          onClick={() => alert('Add Customer modal would open here')}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          <UserPlus className="w-4 h-4" />
           Add Customer
         </button>
       </div>
@@ -58,9 +62,26 @@ const Customers = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{customer.spent}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end gap-2">
-                      <button className="text-gray-400 hover:text-blue-600"><Mail className="w-4 h-4" /></button>
-                      <button className="text-gray-400 hover:text-green-600"><Phone className="w-4 h-4" /></button>
-                      <button className="text-gray-400 hover:text-gray-600"><MoreHorizontal className="w-4 h-4" /></button>
+                      <button 
+                        onClick={() => alert(`Emailing ${customer.email}...`)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Send Email"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => alert(`Calling ${customer.name}...`)}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Call Customer"
+                      >
+                        <Phone className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => alert('More options...')}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>

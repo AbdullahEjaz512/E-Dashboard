@@ -1,6 +1,16 @@
 import { User, Bell } from 'lucide-react';
 
 const Settings = () => {
+  const handleSave = () => {
+    alert('Settings saved successfully!');
+  };
+
+  const handleCancel = () => {
+    if(confirm('Are you sure you want to discard changes?')) {
+      alert('Changes discarded.');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
@@ -20,15 +30,15 @@ const Settings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Full Name</label>
-              <input type="text" defaultValue="Abdullah Ejaz" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input type="text" defaultValue="Abdullah Ejaz" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-shadow" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Email Address</label>
-              <input type="email" defaultValue="abdullah@example.com" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input type="email" defaultValue="abdullah@example.com" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-shadow" />
             </div>
             <div className="md:col-span-2">
                <label className="text-sm font-medium text-gray-700">Bio</label>
-               <textarea className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-24" placeholder="Tell us about yourself..."></textarea>
+               <textarea className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-24 transition-shadow" placeholder="Tell us about yourself..."></textarea>
             </div>
           </div>
         </div>
@@ -70,8 +80,18 @@ const Settings = () => {
       </div>
       
       <div className="flex justify-end gap-3">
-        <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">Cancel</button>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Changes</button>
+        <button 
+          onClick={handleCancel}
+          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          onClick={handleSave}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+        >
+          Save Changes
+        </button>
       </div>
     </div>
   );
