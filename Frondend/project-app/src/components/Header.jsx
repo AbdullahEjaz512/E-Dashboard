@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Search, Menu, User, Settings, LogOut } from 'lucide-react';
 
 const Header = ({ onMenuClick }) => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -82,18 +84,34 @@ const Header = ({ onMenuClick }) => {
 
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 animate-in fade-in zoom-in duration-200">
-                <button className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                <button 
+                  onClick={() => {
+                    navigate('/settings');
+                    setShowProfileMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                >
                   <User className="w-4 h-4" /> Profile
                 </button>
-                <button className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                <button 
+                  onClick={() => {
+                    navigate('/settings');
+                    setShowProfileMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                >
                   <Settings className="w-4 h-4" /> Settings
                 </button>
                 <div className="border-t border-gray-100 my-1"></div>
                 <button 
                   onClick={() => {
-                     if(confirm('Sign out?')) alert('Signed out');
+                     if(confirm('Are you sure you want to sign out?')) {
+                        alert('Signed out successfully');
+                        // In a real app, this would clear auth tokens
+                        // navigate('/login'); 
+                     }
                   }}
-                  className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4" /> Sign Out
                 </button>
