@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Analytics = () => {
   return (
     <div className="space-y-6">

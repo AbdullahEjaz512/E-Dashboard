@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TrendingUp, Users, ShoppingBag, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 const Dashboard = () => {
@@ -23,7 +23,7 @@ const Dashboard = () => {
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-          <p className="text-sm text-gray-500 mt-1">Welcome back, Abdullah Ejaz! Here's what's happening today.</p>
+          <p className="text-sm text-gray-500 mt-1">Welcome back, Abdullah Ejaz! Here&apos;s what&apos;s happening today.</p>
         </div>
         <div className="flex gap-3">
           <select className="text-sm border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">

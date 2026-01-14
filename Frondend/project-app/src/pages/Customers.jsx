@@ -1,4 +1,3 @@
-import React from 'react';
 import { Mail, Phone, MoreHorizontal } from 'lucide-react';
 
 const Customers = () => {
