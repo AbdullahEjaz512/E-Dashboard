@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd Frondend/project-app && npm install && npm run build",
-  "outputDirectory": "Frondend/project-app/dist",
-  "installCommand": "cd Frondend/project-app && npm install"
-}
