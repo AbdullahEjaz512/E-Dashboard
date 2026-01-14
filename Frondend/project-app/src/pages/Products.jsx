@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Search, Filter, Plus, PenSquare, Trash2, X, Check } from 'lucide-react';
+import { Search, Filter, Plus, PenSquare, Trash2, X, Check, Download } from 'lucide-react';
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   
   const [products, setProducts] = useState([
     { id: 1, name: 'Premium Dashboard UI', category: 'Digital', price: '$99.00', stock: 'Unlimited', sales: 1234 },
@@ -51,9 +53,44 @@ const Products = () => {
     }
   };
 
-  const handleEdit = (productName) => {
-    // For now, keep as mock, or we could implement edit modal reusing the add modal
-    alert(`Edit feature for ${productName} coming soon!`);
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      category: product.category,
+      price: product.price.replace('$', ''),
+      stock: product.stock
+    });
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateProduct = (e) => {
+    e.preventDefault();
+    
+    let formattedPrice = newProduct.price;
+    if (!formattedPrice.startsWith('$')) {
+        formattedPrice = `$${formattedPrice}`;
+    }
+
+    const updatedProduct = {
+      ...editingProduct,
+      ...newProduct,
+      price: formattedPrice
+    };
+
+    setProducts(products.map(p => p.id === editingProduct.id ? updatedProduct : p));
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingProduct(null);
+    setNewProduct({ name: '', category: 'Digital', price: '', stock: 'Unlimited' });
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingProduct(null);
+    setNewProduct({ name: '', category: 'Digital', price: '', stock: 'Unlimited' });
   };
 
   const filteredProducts = products.filter(p => {
@@ -66,7 +103,26 @@ const Products = () => {
     <div className="space-y-6 relative">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-        <div className="flex gap-3 w-full sm:w-auto">
+        <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+          <button 
+            onClick={() => {
+              const csvData = [
+                ['Name', 'Category', 'Price', 'Stock', 'Sales'],
+                ...products.map(p => [p.name, p.category, p.price, p.stock, p.sales])
+              ];
+              const csvContent = csvData.map(row => row.join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `products-${Date.now()}.csv`;
+              link.click();
+            }}
+            className="flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Export
+          </button>
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -157,7 +213,7 @@ const Products = () => {
               </div>
               <div className="flex gap-2 mt-4">
                 <button 
-                  onClick={() => handleEdit(product.name)}
+                  onClick={() => handleEdit(product)}
                   className="flex-1 flex items-center justify-center gap-2 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition-colors"
                 >
                   <PenSquare className="w-4 h-4" /> Edit
@@ -184,16 +240,16 @@ const Products = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md animate-in fade-in zoom-in duration-200">
             <div className="flex justify-between items-center p-6 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900">Add New Product</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{isEditMode ? 'Edit Product' : 'Add New Product'}</h3>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleCloseModal}
                 className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg p-1 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleAddProduct} className="p-6 space-y-4">
+            <form onSubmit={isEditMode ? handleUpdateProduct : handleAddProduct} className="p-6 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Product Name</label>
                 <input 
@@ -249,7 +305,7 @@ const Products = () => {
               <div className="pt-4 flex gap-3">
                 <button 
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleCloseModal}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
                 >
                   Cancel
@@ -258,7 +314,7 @@ const Products = () => {
                   type="submit"
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
                 >
-                  Create Product
+                  {isEditMode ? 'Update Product' : 'Create Product'}
                 </button>
               </div>
             </form>

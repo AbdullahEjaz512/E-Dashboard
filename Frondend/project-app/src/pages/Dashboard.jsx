@@ -1,11 +1,26 @@
 import { useState } from 'react';
 import { TrendingUp, Users, ShoppingBag, CreditCard, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
-
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState('Last 7 Days');
+
+  const revenueData = [
+    { month: 'Jan', revenue: 4000 },
+    { month: 'Feb', revenue: 6500 },
+    { month: 'Mar', revenue: 4500 },
+    { month: 'Apr', revenue: 8000 },
+    { month: 'May', revenue: 5500 },
+    { month: 'Jun', revenue: 7000 },
+    { month: 'Jul', revenue: 8500 },
+    { month: 'Aug', revenue: 6000 },
+    { month: 'Sep', revenue: 7500 },
+    { month: 'Oct', revenue: 9000 },
+    { month: 'Nov', revenue: 7000 },
+    { month: 'Dec', revenue: 9500 },
+  ];
 
   const [stats] = useState([
     { title: 'Total Revenue', value: '$45,231', change: '+20.1%', positive: true, icon: CreditCard },
@@ -23,7 +38,38 @@ const Dashboard = () => {
   ]);
 
   const handleDownloadReport = () => {
-    alert(`Downloading report for ${timeRange}... (Mock Action)`);
+    // Generate CSV data
+    const csvData = [
+      ['Dashboard Report', timeRange],
+      [''],
+      ['Metric', 'Value', 'Change'],
+      ['Total Revenue', '$45,231', '+20.1%'],
+      ['Total Users', '2,345', '+12.5%'],
+      ['Total Orders', '1,234', '+8.3%'],
+      ['Conversion Rate', '3.2%', '-2.1%'],
+      [''],
+      ['Revenue by Month'],
+      ['Month', 'Revenue'],
+      ...revenueData.map(d => [d.month, `$${d.revenue}`]),
+      [''],
+      ['Recent Orders'],
+      ['Order ID', 'Customer', 'Product', 'Amount', 'Status', 'Date'],
+      ...recentOrders.map(o => [o.id, o.customer, o.product, o.amount, o.status, o.date])
+    ];
+
+    // Convert to CSV string
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    
+    // Create download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `dashboard-report-${Date.now()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -77,33 +123,25 @@ const Dashboard = () => {
         {/* Revenue Chart */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-6">Revenue Overview</h3>
-          <div className="h-64 flex items-end justify-between gap-3">
-            {[40, 65, 45, 80, 55, 70, 85, 60, 75, 90, 70, 95].map((height, i) => (
-              <div key={i} className="group relative flex-1 bg-blue-50 rounded-t-sm hover:bg-blue-600 transition-colors cursor-pointer">
-                <div 
-                  className="absolute bottom-0 w-full bg-blue-500 rounded-t-sm group-hover:bg-blue-700 transition-all duration-300" 
-                  style={{ height: `${height}%` }}
-                />
-                <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded pointer-events-none transition-opacity font-bold rounded-md bg-opacity-90">
-                  ${height * 100}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex justify-between text-xs font-medium text-gray-400 uppercase tracking-wider">
-            <span>Jan</span>
-            <span>Feb</span>
-            <span>Mar</span>
-            <span>Apr</span>
-            <span>May</span>
-            <span>Jun</span>
-            <span>Jul</span>
-            <span>Aug</span>
-            <span>Sep</span>
-            <span>Oct</span>
-            <span>Nov</span>
-            <span>Dec</span>
-          </div>
+          <ResponsiveContainer width="100%" height={256}>
+            <AreaChart data={revenueData}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="month" stroke="#9CA3AF" style={{ fontSize: '12px' }} />
+              <YAxis stroke="#9CA3AF" style={{ fontSize: '12px' }} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                labelStyle={{ color: '#fff' }}
+                formatter={(value) => [`$${value}`, 'Revenue']}
+              />
+              <Area type="monotone" dataKey="revenue" stroke="#3B82F6" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
 
         {/* User Activity */}

@@ -6,6 +6,37 @@ const Header = ({ onMenuClick }) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Mock search data
+  const searchData = {
+    products: ['Premium Dashboard UI', 'React Component Lib', 'E-Commerce Template', 'Admin Dashboard Pro'],
+    customers: ['John Doe', 'Jane Smith', 'Robert Johnson', 'Emily Davis'],
+    orders: ['#ORD-001', '#ORD-002', '#ORD-003', '#ORD-004']
+  };
+
+  const getSearchResults = () => {
+    if (!searchTerm.trim()) return null;
+    
+    const term = searchTerm.toLowerCase();
+    const results = {
+      products: searchData.products.filter(p => p.toLowerCase().includes(term)),
+      customers: searchData.customers.filter(c => c.toLowerCase().includes(term)),
+      orders: searchData.orders.filter(o => o.toLowerCase().includes(term))
+    };
+    
+    return results;
+  };
+
+  const handleSearchClick = (type, item) => {
+    setSearchTerm('');
+    setShowSearchResults(false);
+    
+    if (type === 'products') navigate('/products');
+    else if (type === 'customers') navigate('/customers');
+    else if (type === 'orders') navigate('/orders');
+  };
 
   const notifications = [
     { id: 1, text: 'New order received (#ORD-005)', time: '5m ago', unread: true },
@@ -28,9 +59,85 @@ const Header = ({ onMenuClick }) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search..."
-              className="pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+              placeholder="Search products, customers, orders..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setShowSearchResults(true);
+              }}
+              onFocus={() => setShowSearchResults(true)}
+              className="pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
             />
+            
+            {showSearchResults && searchTerm.trim() && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowSearchResults(false)}></div>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-20 max-h-96 overflow-y-auto">
+                  {(() => {
+                    const results = getSearchResults();
+                    const hasResults = results.products.length > 0 || results.customers.length > 0 || results.orders.length > 0;
+                    
+                    if (!hasResults) {
+                      return (
+                        <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                          No results found for "{searchTerm}"
+                        </div>
+                      );
+                    }
+                    
+                    return (
+                      <>
+                        {results.products.length > 0 && (
+                          <div>
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Products</div>
+                            {results.products.map((item, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleSearchClick('products', item)}
+                                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                              >
+                                <span>📦</span>
+                                {item}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {results.customers.length > 0 && (
+                          <div>
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-100 mt-1">Customers</div>
+                            {results.customers.map((item, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleSearchClick('customers', item)}
+                                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                              >
+                                <User className="w-4 h-4 text-gray-400" />
+                                {item}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {results.orders.length > 0 && (
+                          <div>
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-100 mt-1">Orders</div>
+                            {results.orders.map((item, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleSearchClick('orders', item)}
+                                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                              >
+                                <span>🛍️</span>
+                                {item}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -86,7 +193,7 @@ const Header = ({ onMenuClick }) => {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 animate-in fade-in zoom-in duration-200">
                 <button 
                   onClick={() => {
-                    navigate('/settings');
+                    navigate('/profile');
                     setShowProfileMenu(false);
                   }}
                   className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"

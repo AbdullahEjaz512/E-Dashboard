@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Phone, MoreHorizontal, UserPlus, X } from 'lucide-react';
+import { Mail, Phone, MoreHorizontal, UserPlus, X, Search, PenSquare, Trash2, Download } from 'lucide-react';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([
@@ -11,7 +11,12 @@ const Customers = () => {
     { id: 6, name: 'Sarah Brown', email: 'sarah@example.com', role: 'Business', status: 'Active', spent: '$5,400', avatar: 'S' },
   ]);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterRole, setFilterRole] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
   const [newCustomer, setNewCustomer] = useState({
     name: '',
     email: '',
@@ -28,40 +33,104 @@ const Customers = () => {
     e.preventDefault();
     const id = customers.length + 1;
     const avatar = newCustomer.name.charAt(0).toUpperCase();
-    const spent = '$0'; // Default for new customer
+    const spent = '$0';
 
     setCustomers([{ id, avatar, spent, ...newCustomer }, ...customers]);
+    handleCloseModal();
+  };
+
+  const handleEditCustomer = (customer) => {
+    setEditingCustomer(customer);
+    setNewCustomer({
+      name: customer.name,
+      email: customer.email,
+      role: customer.role,
+      status: customer.status
+    });
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateCustomer = (e) => {
+    e.preventDefault();
+    const updatedCustomer = {
+      ...editingCustomer,
+      ...newCustomer,
+      avatar: newCustomer.name.charAt(0).toUpperCase()
+    };
+    setCustomers(customers.map(c => c.id === editingCustomer.id ? updatedCustomer : c));
+    handleCloseModal();
+  };
+
+  const handleDeleteCustomer = (id, name) => {
+    if(confirm(`Are you sure you want to delete ${name}?`)) {
+      setCustomers(customers.filter(c => c.id !== id));
+    }
+  };
+
+  const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingCustomer(null);
     setNewCustomer({ name: '', email: '', role: 'Basic', status: 'Active' });
   };
 
+  const filteredCustomers = customers.filter(customer => {
+    const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         customer.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = filterRole === 'All' || customer.role === filterRole;
+    const matchesStatus = filterStatus === 'All' || customer.status === filterStatus;
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
   return (
     <div className="space-y-6 relative">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-900">Customers</h2>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-        >
-          <UserPlus className="w-4 h-4" />
-          Add Customer
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => {
+              const csvData = [
+                ['Name', 'Email', 'Role', 'Status', 'Total Spent'],
+                ...customers.map(c => [c.name, c.email, c.role, c.status, c.spent])
+              ];
+              const csvContent = csvData.map(row => row.join(',')).join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `customers-${Date.now()}.csv`;
+              link.click();
+            }}
+            className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            <UserPlus className="w-4 h-4" />
+            Add Customer
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Spent</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {customers.map((customer) => (
+      {/* Search and Filter */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search customers by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          />
+        </div>
+        <select 
+          valuefilteredCustomers.map((customer) => (
                 <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -83,6 +152,53 @@ const Customers = () => {
                       {customer.status}
                     </span>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.role}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{customer.spent}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => { if(confirm(`Email ${customer.email}?`)) alert('Email sent!'); }}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Send Email"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </button>
+                      <button 
+                         onClick={() => { if(confirm(`Call ${customer.name}?`)) alert('Calling...'); }}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Call Customer"
+                      >
+                        <Phone className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleEditCustomer(customer)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edit Customer"
+                      >
+                        <PenSquare className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCustomer(customer.id, customer.name)}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete Customer"
+                      >
+        {filteredCustomers.length === 0 && (
+          <div className="py-12 text-center text-gray-500">
+            No customers found matching your criteria.
+          </div>
+        )}
+                        <Trash2
+                    </div>
+                  </td>{isEditMode ? 'Edit Customer' : 'Add New Customer'}</h3>
+              <button 
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg p-1 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={isEditMode ? handleUpdateCustomer : 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.role}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{customer.spent}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -174,16 +290,16 @@ const Customers = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Status</label>
                   <select 
-                    name="status"
-                    value={newCustomer.status}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
+                    name="shandleCloseModal}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                >
+                  {isEditMode ? 'Update Customer' : 'Add Customer'}
 
               <div className="pt-4 flex gap-3">
                 <button 
