@@ -130,7 +130,40 @@ const Customers = () => {
           />
         </div>
         <select 
-          valuefilteredCustomers.map((customer) => (
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+        >
+          <option value="All">All Roles</option>
+          <option value="Basic">Basic</option>
+          <option value="Premium">Premium</option>
+          <option value="Business">Business</option>
+        </select>
+        <select 
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+        >
+          <option value="All">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Spent</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filteredCustomers.map((customer) => (
                 <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -182,45 +215,7 @@ const Customers = () => {
                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Delete Customer"
                       >
-        {filteredCustomers.length === 0 && (
-          <div className="py-12 text-center text-gray-500">
-            No customers found matching your criteria.
-          </div>
-        )}
-                        <Trash2
-                    </div>
-                  </td>{isEditMode ? 'Edit Customer' : 'Add New Customer'}</h3>
-              <button 
-                onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg p-1 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={isEditMode ? handleUpdateCustomer : 
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.role}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{customer.spent}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end gap-2">
-                      <button 
-                        onClick={() => { if(confirm(`Email ${customer.email}?`)) alert('Email sent!'); }}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Send Email"
-                      >
-                        <Mail className="w-4 h-4" />
-                      </button>
-                      <button 
-                         onClick={() => { if(confirm(`Call ${customer.name}?`)) alert('Calling...'); }}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="Call Customer"
-                      >
-                        <Phone className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                      >
-                        <MoreHorizontal className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -229,6 +224,11 @@ const Customers = () => {
             </tbody>
           </table>
         </div>
+        {filteredCustomers.length === 0 && (
+          <div className="py-12 text-center text-gray-500">
+            No customers found matching your criteria.
+          </div>
+        )}
       </div>
 
       {/* Add Customer Modal */}
@@ -236,16 +236,16 @@ const Customers = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md animate-in fade-in zoom-in duration-200">
             <div className="flex justify-between items-center p-6 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900">Add New Customer</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{isEditMode ? 'Edit Customer' : 'Add New Customer'}</h3>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleCloseModal}
                 className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg p-1 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleAddCustomer} className="p-6 space-y-4">
+            <form onSubmit={isEditMode ? handleUpdateCustomer : handleAddCustomer} className="p-6 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Full Name</label>
                 <input 
@@ -290,7 +290,21 @@ const Customers = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Status</label>
                   <select 
-                    name="shandleCloseModal}
+                    name="status"
+                    value={newCustomer.status}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={handleCloseModal}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
                 >
                   Cancel
@@ -300,20 +314,6 @@ const Customers = () => {
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
                 >
                   {isEditMode ? 'Update Customer' : 'Add Customer'}
-
-              <div className="pt-4 flex gap-3">
-                <button 
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
-                >
-                  Add Customer
                 </button>
               </div>
             </form>
